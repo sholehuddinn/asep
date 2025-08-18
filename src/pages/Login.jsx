@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
+import Swal from "sweetalert2";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -56,11 +57,23 @@ export default function Login() {
         sessionStorage.setItem("user", JSON.stringify(data.users));
       }
 
-      alert("Login successful!");
-      window.location.href = "/dashboard"; 
+      Swal.fire({
+        title: "Login successful!",
+        text: "Welcome back!",
+        icon: "success",
+        confirmButtonText: "OK"
+      });
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 2000);
     } catch (err) {
       console.error("Error during login:", err);
-      alert("An error occurred while logging in.");
+      Swal.fire({
+        title: "Login failed!",
+        text: "Please check your credentials and try again.",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
     } finally {
       setIsLoading(false);
     }

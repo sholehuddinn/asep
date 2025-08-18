@@ -11,6 +11,7 @@ import {
   Menu,
   X
 } from "lucide-react";
+import Swal from 'sweetalert2';
 
 const sidebarItems = [
   {
@@ -102,10 +103,40 @@ const Sidebar = () => {
     return false;
   };
 
+  const handleLogoutConfirmation = () => {
+    Swal.fire({
+      title: 'Konfirmasi Logout',
+      text: 'Apakah Anda yakin ingin keluar dari sistem?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#000080',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleLogout();
+      }
+    });
+  };
+
   const handleLogout = async () => {
     if (isLoggingOut) return;
     
     setIsLoggingOut(true);
+    
+    // Show loading alert
+    Swal.fire({
+      title: 'Sedang Logout...',
+      text: 'Mohon tunggu sebentar',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
     
     try {
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/logout`, {
@@ -120,18 +151,37 @@ const Sidebar = () => {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      // Clear session storage and redirect
+      // Clear session storage
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
-      navigate("/login", { replace: true });
+      
+      // Show success message
+      Swal.fire({
+        title: 'Logout Berhasil!',
+        text: 'Anda berhasil keluar dari sistem',
+        icon: 'success',
+        confirmButtonColor: '#000080',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        navigate("/login", { replace: true });
+      });
       
     } catch (err) {
       console.error("Logout error:", err);
       
-      // Even if API call fails, clear local storage and redirect
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
-      navigate("/login", { replace: true });
+      // Show error message but still logout locally
+      Swal.fire({
+        title: 'Peringatan!',
+        text: 'Terjadi kesalahan pada server, namun Anda tetap akan logout dari sistem',
+        icon: 'warning',
+        confirmButtonColor: '#000080'
+      }).then(() => {
+        // Even if API call fails, clear local storage and redirect
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        navigate("/login", { replace: true });
+      });
     } finally {
       setIsLoggingOut(false);
     }
@@ -211,7 +261,7 @@ const Sidebar = () => {
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 space-y-2">
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutConfirmation}
           disabled={isLoggingOut}
           className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition-colors ${
             isLoggingOut 
@@ -227,7 +277,7 @@ const Sidebar = () => {
   );
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       {/* Mobile Menu Button */}
       <button
         onClick={toggleMobileMenu}
@@ -246,7 +296,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div className={`
-        w-64 h-screen bg-white border-r border-gray-200 flex flex-col
+        w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col
         fixed lg:static inset-y-0 left-0 z-40
         transform transition-transform duration-300 ease-in-out lg:transform-none
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
@@ -255,7 +305,7 @@ const Sidebar = () => {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 lg:ml-0">
+      <main className="flex-1 p-4 lg:ml-0 min-h-screen">
         <div className="pt-16 lg:pt-0">
           <Outlet />
         </div>
