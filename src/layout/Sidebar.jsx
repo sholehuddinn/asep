@@ -9,9 +9,9 @@ import {
   ChevronUp,
   LogOut,
   Menu,
-  X
+  X,
 } from "lucide-react";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const sidebarItems = [
   {
@@ -50,6 +50,12 @@ const sidebarItems = [
         path: "/lokasi",
       },
     ],
+  },
+  {
+    id: "coba",
+    label: "Coba",
+    icon: MapPin,
+    path: "/coba",
   },
 ];
 
@@ -105,15 +111,15 @@ const Sidebar = () => {
 
   const handleLogoutConfirmation = () => {
     Swal.fire({
-      title: 'Konfirmasi Logout',
-      text: 'Apakah Anda yakin ingin keluar dari sistem?',
-      icon: 'warning',
+      title: "Konfirmasi Logout",
+      text: "Apakah Anda yakin ingin keluar dari sistem?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#000080',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ya, Keluar',
-      cancelButtonText: 'Batal',
-      reverseButtons: true
+      confirmButtonColor: "#000080",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, Keluar",
+      cancelButtonText: "Batal",
+      reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
         handleLogout();
@@ -123,26 +129,26 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
-    
+
     setIsLoggingOut(true);
-    
+
     // Show loading alert
     Swal.fire({
-      title: 'Sedang Logout...',
-      text: 'Mohon tunggu sebentar',
+      title: "Sedang Logout...",
+      text: "Mohon tunggu sebentar",
       allowOutsideClick: false,
       allowEscapeKey: false,
       showConfirmButton: false,
       didOpen: () => {
         Swal.showLoading();
-      }
+      },
     });
-    
+
     try {
       const res = await fetch(`${import.meta.env.VITE_BASE_URL}/logout`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -154,28 +160,27 @@ const Sidebar = () => {
       // Clear session storage
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
-      
+
       // Show success message
       Swal.fire({
-        title: 'Logout Berhasil!',
-        text: 'Anda berhasil keluar dari sistem',
-        icon: 'success',
-        confirmButtonColor: '#000080',
+        title: "Logout Berhasil!",
+        text: "Anda berhasil keluar dari sistem",
+        icon: "success",
+        confirmButtonColor: "#000080",
         timer: 1500,
-        showConfirmButton: false
+        showConfirmButton: false,
       }).then(() => {
         navigate("/login", { replace: true });
       });
-      
     } catch (err) {
       console.error("Logout error:", err);
-      
+
       // Show error message but still logout locally
       Swal.fire({
-        title: 'Peringatan!',
-        text: 'Terjadi kesalahan pada server, namun Anda tetap akan logout dari sistem',
-        icon: 'warning',
-        confirmButtonColor: '#000080'
+        title: "Peringatan!",
+        text: "Terjadi kesalahan pada server, namun Anda tetap akan logout dari sistem",
+        icon: "warning",
+        confirmButtonColor: "#000080",
       }).then(() => {
         // Even if API call fails, clear local storage and redirect
         sessionStorage.removeItem("token");
@@ -193,7 +198,8 @@ const Sidebar = () => {
     const hasChildren = item.children && item.children.length > 0;
 
     const activeClass = "bg-[#000080] text-white font-semibold";
-    const inactiveClass = "text-gray-700 hover:text-white hover:font-semibold hover:bg-[#000080]";
+    const inactiveClass =
+      "text-gray-700 hover:text-white hover:font-semibold hover:bg-[#000080]";
 
     return (
       <div key={item.id}>
@@ -264,7 +270,7 @@ const Sidebar = () => {
           onClick={handleLogoutConfirmation}
           disabled={isLoggingOut}
           className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition-colors ${
-            isLoggingOut 
+            isLoggingOut
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "text-gray-700 hover:text-white hover:font-semibold hover:bg-[#000080]"
           }`}
@@ -283,24 +289,34 @@ const Sidebar = () => {
         onClick={toggleMobileMenu}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#000080] text-white rounded-lg shadow-lg"
       >
-        {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        {isMobileMenuOpen ? (
+          <X className="w-5 h-5" />
+        ) : (
+          <Menu className="w-5 h-5" />
+        )}
       </button>
 
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={closeMobileMenu}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`
+      <div
+        className={`
         w-64 min-h-screen bg-white border-r border-gray-200 flex flex-col
         fixed lg:static inset-y-0 left-0 z-40
         transform transition-transform duration-300 ease-in-out lg:transform-none
-        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
+        ${
+          isMobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        }
+      `}
+      >
         <SidebarContent />
       </div>
 

@@ -9,6 +9,7 @@ import Institusi from "../pages/Institusi";
 import Unit from "../pages/Unit";
 import SubUnit from "../pages/SubUnit";
 import Lokasi from "../pages/Lokasi";
+import Coba from "../pages/coba";
 
 const router = createBrowserRouter([
   { path: "/login", element: <Login /> },
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: "unit", element: <Unit /> },
       { path: "sub-unit", element: <SubUnit /> },
       { path: "lokasi", element: <Lokasi /> },
+      { path: "coba", element: <Coba /> },
     ],
   },
 ]);

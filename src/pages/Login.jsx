@@ -10,7 +10,6 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Validation
   const validateForm = () => {
     const newErrors = {};
     
@@ -48,7 +47,13 @@ export default function Login() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Login failed!");
+        Swal.fire({
+          title: "Login failed!",
+          text: data.message || "An error occurred during login.",
+          icon: "error",
+          confirmButtonText: "OK"
+        });
+         setIsLoading(false);
         return;
       }
 
